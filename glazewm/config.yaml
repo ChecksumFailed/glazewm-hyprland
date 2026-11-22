@@ -158,7 +158,7 @@ window_rules:
   # ---------- Floating dialogs (your rules.lua, titles carry over) ----------
   - commands: ['set-floating --centered']
     match:
-      - window_title: { regex: '^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload)(.*)$' }
+      - window_title: { regex: '^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|File Upload)(.*)$' }
       - window_title: { regex: '^(.*)(wants to save|wants to open)$' }
       - window_title: { regex: '.*Welcome' }
       - window_title: { regex: '^[Pp]icture[-\s]?[Ii]n[-\s]?[Pp]icture' }
@@ -171,13 +171,21 @@ window_rules:
       - window_process: { regex: '(?i)discord' }
       - window_process: { regex: '(?i)slack' }
 
-  # Workspace 7: Steam (games launch fullscreen too).
+  # Workspace 7: Steam + games. Covers the launcher wrapper (steam_app_<id>),
+  # Unreal release builds (e.g. WardogsClient-Win64-Shipping), and Unity
+  # standalone players. Add new engines' patterns here as needed.
   - commands: ['move --workspace 7']
     match:
       - window_process: { regex: '(?i)^steam$' }
+      - window_process: { regex: '(?i)^steam_app_' }
+      - window_process: { regex: '(?i).*-win64-shipping.*' }
+      - window_class: { regex: '(?i)^UnityWndClass$' }
+  # Fullscreen for classic steam_app wrapper titles (old hyprland rule).
+  # UE/Unity borderless games size themselves, so they only get placed.
   - commands: ['move --workspace 7', 'toggle-fullscreen']
     match:
-      - window_process: { regex: '(?i)steam_app_' }
+      - window_process: { regex: '(?i)^steam_app_' }
+      - window_class: { regex: '(?i)^steam_app_' }
 
   # Special workspace "magic": Obsidian.
   - commands: ['move --workspace magic']
