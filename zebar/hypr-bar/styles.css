@@ -1,0 +1,185 @@
+/**
+ * hypr-bar — Waybar-style retheme in the Hyprland dotfiles palette:
+ *   background rgba(18 19 24)   -> colors.lua background_color #121318
+ *   accent     #0db7d4          -> custom/general.lua active_border cyan
+ *   slate      #44464f          -> colors.lua active_border
+ * Import the Nerdfonts icon font.
+ * Ref https://www.nerdfonts.com/cheat-sheet for available icons.
+ */
+@import 'https://www.nerdfonts.com/assets/css/webfont.css';
+
+:root {
+  --text-size: 12px;
+  --icon-size: 12px;
+
+  --text-color: rgba(255 255 255 / 85%);
+  --text-color-dim: rgba(255 255 255 / 45%);
+  --accent: #0db7d4;
+  --slate: #44464f;
+
+  --bg: rgba(18 19 24 / 92%);
+  --module-bg: rgba(255 255 255 / 6%);
+  --module-bg-hover: rgba(255 255 255 / 12%);
+  --border-color: rgba(255 255 255 / 6%);
+}
+
+body {
+  font-family: 'JetBrainsMono Nerd Font', ui-monospace, monospace;
+  font-size: var(--text-size);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+div,
+span,
+p,
+button {
+  cursor: default;
+  user-select: none;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+#root {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+i {
+  margin-right: 5px;
+  font-size: var(--icon-size);
+  color: var(--accent);
+}
+
+.app {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+}
+
+.left,
+.center,
+.right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.center {
+  justify-self: center;
+  letter-spacing: 0.5px;
+}
+
+.right {
+  justify-self: end;
+}
+
+/* ---- Workspaces: Waybar-style pills ---- */
+.workspaces {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.workspace {
+  min-width: 26px;
+  padding: 3px 8px;
+  background: transparent;
+  color: var(--text-color-dim);
+  border: none;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: var(--text-size);
+  line-height: 1.2;
+  transition: background 0.15s ease;
+}
+
+.workspace:hover {
+  background: var(--module-bg-hover);
+  color: var(--text-color);
+}
+
+.workspace.displayed {
+  background: var(--module-bg);
+  color: var(--text-color);
+}
+
+.workspace.focused {
+  background: var(--accent);
+  color: #121318;
+  font-weight: 600;
+}
+
+/* ---- Focused window title ---- */
+.window-title {
+  max-width: 32vw;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-color-dim);
+  padding-left: 8px;
+  border-left: 1px solid var(--border-color);
+}
+
+/* ---- GlazeWM state pills ---- */
+.binding-mode,
+.paused-button {
+  background: var(--slate);
+  color: var(--text-color);
+  border-radius: 6px;
+  line-height: 1.2;
+  padding: 3px 8px;
+  border: 0;
+  font-family: inherit;
+  font-size: var(--text-size);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.paused-button {
+  background: #900029;
+}
+
+.tiling-direction {
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  padding: 3px 4px;
+  font-size: 14px;
+}
+
+.tiling-direction:hover {
+  color: var(--text-color);
+}
+
+/* ---- System modules ---- */
+.network,
+.memory,
+.cpu,
+.battery,
+.weather {
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+}
+
+.cpu .high-usage {
+  color: #e64553;
+}
+
+.battery {
+  position: relative;
+}
+
+.battery .charging-icon {
+  position: absolute;
+  font-size: 7px;
+  left: -8px;
+  top: 3px;
+}

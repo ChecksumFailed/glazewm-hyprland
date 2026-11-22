@@ -1,0 +1,5 @@
+# Logs and local machine state never go in the repo.
+*.log
+*.bak
+*.bak.*
+*-backup.txt

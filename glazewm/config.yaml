@@ -1,0 +1,452 @@
+# =============================================================================
+# GlazeWM config — Hyprland-flavored
+# Ported from my Linux Hyprland dotfiles (~/.config/hypr/, Lua-configured)
+#
+#   mod = SUPER (lwin). Reload config: SUPER+SHIFT+R.
+#   Backups of the stock config: config.yaml.bak
+#   Cheat sheet: HYPRLAND-CHEATSHEET.md (same folder)
+#
+# Binds use `lwin` (left Win key). If you press the right Win key instead,
+# duplicate entries with `rwin` or replace lwin -> rwin.
+# =============================================================================
+
+general:
+  startup_commands:
+    - 'shell-exec zebar'
+    # Flow Launcher (your rofi/Noctalia-launcher stand-in). It also has its own
+    # "run at login" toggle in its settings.
+    - 'shell-exec %LOCALAPPDATA%\FlowLauncher\Flow.Launcher.exe'
+    # Your Linux autostart apps (custom/execs.lua) — uncomment as desired:
+    # - 'shell-exec steam -silent'
+    # - 'shell-exec discord'
+
+  shutdown_commands: ['shell-exec taskkill /IM zebar.exe /F']
+  config_reload_commands: []
+
+  # Hyprland input:follow_mouse = 1.
+  focus_follows_cursor: true
+
+  # Focusing the workspace you're already on bounces back to the previous one.
+  # This is what makes the ALT+Space "special:magic" scratchpad toggle work.
+  toggle_workspace_on_refocus: true
+
+  cursor_jump:
+    enabled: true
+    trigger: 'monitor_focus'
+
+  hide_method: 'cloak'
+  show_all_in_taskbar: false
+
+gaps:
+  scale_with_dpi: true
+  # Your hyprland general.lua: gaps_in = 4, gaps_out = 5.
+  # Top gap is just gaps_out too: Zebar is docked to the top edge, so Windows
+  # already reserves its 40px (workingRect.top = 40) — adding more here stacks.
+  inner_gap: '4px'
+  outer_gap:
+    top: '5px'
+    right: '5px'
+    bottom: '5px'
+    left: '5px'
+
+window_effects:
+  # Visual effects are Win11-only.
+  focused_window:
+    # Your colors.lua: active_border = rgba(44464f77). GlazeWM takes solid hex,
+    # so this is that slate against your background_color rgba(121318FF).
+    border:
+      enabled: true
+      color: '#44464f'
+    hide_title_bar:
+      enabled: false
+    # Your decoration.rounding = 20.
+    corner_style:
+      enabled: true
+      style: 'rounded'
+    transparency:
+      enabled: false
+      opacity: '100%'
+
+  other_windows:
+    # Your inactive_border = rgba(1a1b2033).
+    border:
+      enabled: true
+      color: '#1a1b20'
+    hide_title_bar:
+      enabled: false
+    corner_style:
+      enabled: true
+      style: 'rounded'
+    # Stands in for decoration:dim_inactive + dim_strength 0.05.
+    transparency:
+      enabled: true
+      opacity: '95%'
+
+window_behavior:
+  initial_state: 'tiling'
+  state_defaults:
+    floating:
+      # Your rules.lua centers every dialog it floats.
+      centered: true
+      shown_on_top: false
+    fullscreen:
+      maximized: false
+      shown_on_top: false
+
+workspaces:
+  # Mirrors hyprland-desktop/custom/rules.lua (persistent workspaces):
+  #   left portrait 24" (DP-3)     -> monitor 0  -> workspaces 1-3
+  #   center 34" ultrawide (DP-1)  -> monitor 1  -> workspaces 4-7
+  #   right 24" (HDMI-A-1)         -> monitor 2  -> workspaces 8-10
+  # keep_alive = your `persistent = true`.
+  # magic/scratchpad are special-workspace stand-ins; unbound so they appear on
+  # whichever monitor you call them from, like Hyprland special workspaces.
+  - name: '1'
+    bind_to_monitor: 0
+    keep_alive: true
+  - name: '2'
+    bind_to_monitor: 0
+    keep_alive: true
+  - name: '3'
+    bind_to_monitor: 0
+    keep_alive: true
+  - name: '4'
+    bind_to_monitor: 1
+    keep_alive: true
+  - name: '5'
+    bind_to_monitor: 1
+    keep_alive: true
+  - name: '6'
+    bind_to_monitor: 1
+    keep_alive: true
+  - name: '7'
+    bind_to_monitor: 1
+    keep_alive: true
+  - name: '8'
+    bind_to_monitor: 2
+    keep_alive: true
+  - name: '9'
+    bind_to_monitor: 2
+    keep_alive: true
+  - name: '10'
+    bind_to_monitor: 2
+    keep_alive: true
+  - name: 'magic'
+    keep_alive: true
+  - name: 'scratchpad'
+    keep_alive: true
+
+window_rules:
+  # ---------- Ignored (unmanaged) windows ----------
+  - commands: ['ignore']
+    match:
+      - window_process: { equals: 'zebar' }
+      - window_process: { equals: 'Flow.Launcher' }
+      # Picture-in-picture windows for browsers (from stock config).
+      - window_title: { regex: '[Pp]icture.in.[Pp]icture' }
+        window_class: { regex: 'Chrome_WidgetWin_1|MozillaDialogClass' }
+      # PowerToys overlays (from stock config).
+      - window_process: { equals: 'PowerToys' }
+        window_class: { regex: 'HwndWrapper\[PowerToys\.PowerAccent.*?\]' }
+      - window_title: { equals: 'Command Palette' }
+        window_class: { equals: 'WinUIDesktopWin32WindowClass' }
+      - window_process: { equals: 'PowerToys' }
+        window_title: { regex: '.*? - Peek' }
+      # Snipping Tool overlay.
+      - window_process: { equals: 'SnippingTool' }
+
+  # ---------- Floating dialogs (your rules.lua, titles carry over) ----------
+  - commands: ['set-floating --centered']
+    match:
+      - window_title: { regex: '^(Open File|Select a File|Choose wallpaper|Open Folder|Save As|Library|File Upload)(.*)$' }
+      - window_title: { regex: '^(.*)(wants to save|wants to open)$' }
+      - window_title: { regex: '.*Welcome' }
+      - window_title: { regex: '^[Pp]icture[-\s]?[Ii]n[-\s]?[Pp]icture' }
+      - window_title: { regex: '.*is sharing (a window|your screen).*' }
+
+  # ---------- App -> workspace (your custom/window_rules.lua) ----------
+  # Workspace 1: Discord and Slack.
+  - commands: ['move --workspace 1']
+    match:
+      - window_process: { regex: '(?i)discord' }
+      - window_process: { regex: '(?i)slack' }
+
+  # Workspace 7: Steam (games launch fullscreen too).
+  - commands: ['move --workspace 7']
+    match:
+      - window_process: { regex: '(?i)^steam$' }
+  - commands: ['move --workspace 7', 'toggle-fullscreen']
+    match:
+      - window_process: { regex: '(?i)steam_app_' }
+
+  # Special workspace "magic": Obsidian.
+  - commands: ['move --workspace magic']
+    match:
+      - window_process: { regex: '(?i)obsidian' }
+
+  # Brave PWAs (ws 2) / Outlook+Teams (ws 3) / mail PWAs (ws 8): PWAs on
+  # Windows all share chrome classes, so match by window title instead and
+  # adjust to taste. Example:
+  # - commands: ['move --workspace 2']
+  #   match:
+  #     - window_process: { regex: '(?i)brave' }
+  #       window_title: { regex: 'Your PWA title here' }
+
+binding_modes:
+  # SUPER+R: resize with HJKL/arrows, ESC/Enter to exit.
+  - name: 'resize'
+    keybindings:
+      - commands: ['resize --width -2%']
+        bindings: ['h', 'left']
+      - commands: ['resize --width +2%']
+        bindings: ['l', 'right']
+      - commands: ['resize --height +2%']
+        bindings: ['k', 'up']
+      - commands: ['resize --height -2%']
+        bindings: ['j', 'down']
+      - commands: ['wm-disable-binding-mode --name resize']
+        bindings: ['escape', 'enter']
+
+keybindings:
+  # ================= Focus (custom/keybinds.lua) =================
+  # Super+HJKL focus left/down/up/right; Super+Left/Right do the same.
+  - commands: ['focus --direction left']
+    bindings: ['lwin+h', 'lwin+left']
+  - commands: ['focus --direction right']
+    bindings: ['lwin+l', 'lwin+right']
+  - commands: ['focus --direction up']
+    bindings: ['lwin+k']
+  - commands: ['focus --direction down']
+    bindings: ['lwin+j']
+
+  # ================= Move window =================
+  # Super+Shift+HJKL (and arrows) move the focused window.
+  - commands: ['move --direction left']
+    bindings: ['lwin+shift+h', 'lwin+shift+left']
+  - commands: ['move --direction right']
+    bindings: ['lwin+shift+l', 'lwin+shift+right']
+  - commands: ['move --direction up']
+    bindings: ['lwin+shift+k', 'lwin+shift+up']
+  - commands: ['move --direction down']
+    bindings: ['lwin+shift+j', 'lwin+shift+down']
+
+  # ================= Resize =================
+  # Super+Apostrophe nudges the split (hyprland: splitratio +0.1).
+  - commands: ['resize --width +2%']
+    bindings: ['lwin+oem_quotes']
+  - commands: ['resize --width -2%']
+    bindings: ['lwin+shift+oem_quotes']
+  # Super+R: HJKL/arrow resize mode (binding mode above).
+  - commands: ['wm-enable-binding-mode --name resize']
+    bindings: ['lwin+r']
+
+  # ================= Window state =================
+  # Super+Q close; Super+Shift+Alt+Q "zap" (no force-kill in GlazeWM, same close).
+  - commands: ['close']
+    bindings: ['lwin+q', 'lwin+shift+alt+q']
+  # Super+F fullscreen (also Super+Shift+F, Alt+F from custom/keybinds.lua).
+  - commands: ['toggle-fullscreen']
+    bindings: ['lwin+f', 'lwin+shift+f', 'alt+f']
+  # Super+Alt+D maximize (hyprland fullscreen mode=maximized).
+  - commands: ['toggle-fullscreen --maximized']
+    bindings: ['lwin+alt+d']
+  # Ctrl+Super+Backslash: 640x480 window ("make window not amogus large").
+  - commands: ['size --width 640px --height 480px']
+    bindings: ['ctrl+lwin+oem_pipe']
+  # Super+V / Super+Alt+Space float toggle.
+  - commands: ['toggle-floating']
+    bindings: ['lwin+v', 'lwin+alt+space']
+  # Super+Semicolon toggle split direction (hyprland togglesplit).
+  - commands: ['toggle-tiling-direction']
+    bindings: ['lwin+oem_semicolon', 'ctrl+shift+oem_pipe']
+  # Super+Tab cycles focus tiling -> floating -> fullscreen.
+  - commands: ['wm-cycle-focus']
+    bindings: ['lwin+tab']
+
+  # ================= Workspaces =================
+  # Super+I/U and Super+Down/Up: next/prev workspace on this monitor
+  # (hyprland e+1/e-1 group cycling).
+  - commands: ['focus --next-active-workspace-on-monitor']
+    bindings: ['lwin+i', 'lwin+down']
+  - commands: ['focus --prev-active-workspace-on-monitor']
+    bindings: ['lwin+u', 'lwin+up']
+  # Ctrl+Super+Left/Right, Super+PageDown/PageUp, Ctrl+Super+[/]:
+  # workspace index +/- 1 (hyprland r+1/r-1).
+  - commands: ['focus --next-workspace']
+    bindings: ['ctrl+lwin+right', 'lwin+page_down', 'ctrl+lwin+oem_close_brackets']
+  - commands: ['focus --prev-workspace']
+    bindings: ['ctrl+lwin+left', 'lwin+page_up', 'ctrl+lwin+oem_open_brackets']
+  # Ctrl+Super+Down/Up: jump 5 workspaces (hyprland r+5/r-5).
+  - commands: ['focus --next-workspace', 'focus --next-workspace', 'focus --next-workspace', 'focus --next-workspace', 'focus --next-workspace']
+    bindings: ['ctrl+lwin+down']
+  - commands: ['focus --prev-workspace', 'focus --prev-workspace', 'focus --prev-workspace', 'focus --prev-workspace', 'focus --prev-workspace']
+    bindings: ['ctrl+lwin+up']
+  # Ctrl+Super+Alt+Left/Right: hop between monitors (hyprland m-1/m+1).
+  - commands: ['focus --direction left']
+    bindings: ['ctrl+lwin+alt+left']
+  - commands: ['focus --direction right']
+    bindings: ['ctrl+lwin+alt+right']
+
+  # Super+1..0: focus workspace 1..10.
+  - commands: ['focus --workspace 1']
+    bindings: ['lwin+1']
+  - commands: ['focus --workspace 2']
+    bindings: ['lwin+2']
+  - commands: ['focus --workspace 3']
+    bindings: ['lwin+3']
+  - commands: ['focus --workspace 4']
+    bindings: ['lwin+4']
+  - commands: ['focus --workspace 5']
+    bindings: ['lwin+5']
+  - commands: ['focus --workspace 6']
+    bindings: ['lwin+6']
+  - commands: ['focus --workspace 7']
+    bindings: ['lwin+7']
+  - commands: ['focus --workspace 8']
+    bindings: ['lwin+8']
+  - commands: ['focus --workspace 9']
+    bindings: ['lwin+9']
+  - commands: ['focus --workspace 10']
+    bindings: ['lwin+0']
+
+  # Super+Shift+1..0: move window to workspace AND follow it.
+  - commands: ['move --workspace 1', 'focus --workspace 1']
+    bindings: ['lwin+shift+1']
+  - commands: ['move --workspace 2', 'focus --workspace 2']
+    bindings: ['lwin+shift+2']
+  - commands: ['move --workspace 3', 'focus --workspace 3']
+    bindings: ['lwin+shift+3']
+  - commands: ['move --workspace 4', 'focus --workspace 4']
+    bindings: ['lwin+shift+4']
+  - commands: ['move --workspace 5', 'focus --workspace 5']
+    bindings: ['lwin+shift+5']
+  - commands: ['move --workspace 6', 'focus --workspace 6']
+    bindings: ['lwin+shift+6']
+  - commands: ['move --workspace 7', 'focus --workspace 7']
+    bindings: ['lwin+shift+7']
+  - commands: ['move --workspace 8', 'focus --workspace 8']
+    bindings: ['lwin+shift+8']
+  - commands: ['move --workspace 9', 'focus --workspace 9']
+    bindings: ['lwin+shift+9']
+  - commands: ['move --workspace 10', 'focus --workspace 10']
+    bindings: ['lwin+shift+0']
+
+  # Super+Alt+1..0: send window to workspace, stay here (hyprland silent move).
+  - commands: ['move --workspace 1']
+    bindings: ['lwin+alt+1']
+  - commands: ['move --workspace 2']
+    bindings: ['lwin+alt+2']
+  - commands: ['move --workspace 3']
+    bindings: ['lwin+alt+3']
+  - commands: ['move --workspace 4']
+    bindings: ['lwin+alt+4']
+  - commands: ['move --workspace 5']
+    bindings: ['lwin+alt+5']
+  - commands: ['move --workspace 6']
+    bindings: ['lwin+alt+6']
+  - commands: ['move --workspace 7']
+    bindings: ['lwin+alt+7']
+  - commands: ['move --workspace 8']
+    bindings: ['lwin+alt+8']
+  - commands: ['move --workspace 9']
+    bindings: ['lwin+alt+9']
+  - commands: ['move --workspace 10']
+    bindings: ['lwin+alt+0']
+
+  # Super+Shift+PageDown/PageUp, Ctrl+Shift+Super+Right/Left, Super+Alt+PageDown/Up:
+  # send window to workspace +/- 1 (hyprland r+1/r-1 moves).
+  - commands: ['move --next-workspace']
+    bindings: ['lwin+shift+page_down', 'ctrl+lwin+shift+right', 'lwin+alt+page_down']
+  - commands: ['move --prev-workspace']
+    bindings: ['lwin+shift+page_up', 'ctrl+lwin+shift+left', 'lwin+alt+page_up']
+
+  # ============ Special workspaces (scratchpad emulation) ============
+  # Hyprland special:magic. 'magic' and 'scratchpad' are normal workspaces;
+  # toggle_workspace_on_refocus makes refocusing them jump back = toggle.
+  - commands: ['focus --workspace magic']
+    bindings: ['alt+space']
+  - commands: ['move --workspace magic']
+    bindings: ['alt+shift+space']
+  # Hyprland special:special (scratchpad).
+  - commands: ['focus --workspace scratchpad']
+    bindings: ['lwin+alt+oem_tilde']
+  - commands: ['move --workspace scratchpad']
+    bindings: ['lwin+alt+s']
+
+  # ================= Apps =================
+  # Super+Return / Super+T / Super+A / Ctrl+Alt+T: terminal (kitty zsh -> wt).
+  - commands: ['shell-exec wt']
+    bindings: ['lwin+enter', 'lwin+t', 'lwin+a', 'ctrl+alt+t']
+  # Super+B Brave, Super+E file manager (yazi -> Explorer).
+  - commands: ['shell-exec brave']
+    bindings: ['lwin+b']
+  - commands: ['shell-exec explorer']
+    bindings: ['lwin+e']
+  # Super+Shift+G: btop -> Task Manager (swap in btop if you install it).
+  - commands: ['shell-exec taskmgr']
+    bindings: ['lwin+shift+g']
+  - commands: ['shell-exec taskmgr']
+    bindings: ['ctrl+shift+escape']
+  # Ctrl+Super+V: volume mixer (pavucontrol -> sndvol).
+  - commands: ['shell-exec sndvol']
+    bindings: ['ctrl+lwin+v']
+  # Super+Space: launcher (Noctalia launcher -> Flow Launcher).
+  - commands: ['shell-exec %LOCALAPPDATA%\FlowLauncher\Flow.Launcher.exe']
+    bindings: ['lwin+space']
+  # Super+Shift+Q: restart shell (Noctalia -> Zebar).
+  - commands: ['shell-exec powershell -windowstyle hidden -c "taskkill /IM zebar.exe /F; Start-Sleep -Seconds 1; Start-Process zebar"']
+    bindings: ['lwin+shift+q']
+
+  # Not installed on this side (your Linux binds kept as commented stubs):
+  # Super+C code editor  -> install VS Code/Cursor, then uncomment:
+  # - commands: ['shell-exec code']
+  #   bindings: ['lwin+c']
+  # Super+Y yazi, Super+X cmus, Super+Shift+X pulsemixer, Super+M Telegram,
+  # Ctrl+Super+Shift+Alt+W office:
+  # - commands: ['shell-exec wt -w 0 nt yazi']
+  #   bindings: ['lwin+y']
+
+  # ================= Shell / panels (Noctalia -> Windows) =================
+  # Ctrl+Super+T / Alt+W: wallpaper panel -> Windows wallpaper settings.
+  - commands: ['shell-exec explorer ms-settings:personalization-background']
+    bindings: ['ctrl+lwin+t', 'alt+w']
+  # Ctrl+Super+Alt+T random wallpaper: no Windows equivalent (Lively Wallpaper
+  # or a script would do this).
+  # Ctrl+Super+Shift+D theme toggle -> color settings (manual toggle).
+  - commands: ['shell-exec explorer ms-settings:colors']
+    bindings: ['ctrl+lwin+shift+d']
+  # Super+N notifications, Super+Shift+V clipboard, Super+Shift+Period emoji,
+  # Super+Minus/Equal zoom: left unbound on purpose — Win+N / Win+V / Win+. /
+  # Win+Plus do exactly this natively.
+
+  # ================= Screenshots (Noctalia -> Snipping Tool) =================
+  # Print: fullscreen -> clipboard (Noctalia screenshot-fullscreen).
+  - commands: ['shell-exec SnippingTool /clip']
+    bindings: ['print_screen', 'ctrl+lwin+s']
+  # Shift+Print / Super+Shift+S: region snip (grim+slurp style).
+  - commands: ['shell-exec explorer ms-screenclip:']
+    bindings: ['shift+print_screen', 'lwin+shift+s']
+  # Super+Shift+R: reload config (deviation: on Linux this is the screen
+  # recorder; on Windows use Win+Alt+R (Xbox Game Bar) or Snipping Tool record).
+  - commands: ['wm-reload-config']
+    bindings: ['lwin+shift+r']
+
+  # ================= Session =================
+  # Ctrl+Alt+L lock, Ctrl+Alt+Shift+L sleep.
+  - commands: ['shell-exec rundll32 user32.dll,LockWorkStation']
+    bindings: ['ctrl+alt+l']
+  - commands: ['shell-exec rundll32.exe powrprof.dll,SetSuspendState 0,1,0']
+    bindings: ['ctrl+alt+shift+l']
+  # Ctrl+Shift+Alt+Super+Delete: shut down (hyprland poweroff).
+  - commands: ['shell-exec shutdown /s /t 0']
+    bindings: ['lwin+ctrl+shift+alt+delete']
+  # Super+Ctrl+E: exit the WM.
+  - commands: ['wm-exit']
+    bindings: ['lwin+ctrl+e']
+
+  # ================= Misc =================
+  # Super+Alt+F1: VM submap -> pause ALL WM binds (same escape hatch).
+  - commands: ['wm-toggle-pause']
+    bindings: ['lwin+alt+f1']
+  # Alt+F4: left unbound so the Windows nag-free close keeps working. Your
+  # "wrong close keybind" troll stays on Linux. :)
